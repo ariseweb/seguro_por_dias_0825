@@ -1,0 +1,87 @@
+.box-por-dias-step1 {
+    border-radius: 13px;
+    padding: 20px 20px 25px;
+    margin: 0 auto;
+    position: relative;
+    top: -50px;
+    background: white;
+    box-shadow: 0px 3px 30px #33414526;
+    max-width: 94%;
+    margin-left: 3%;
+    border-color: var(--color-e);
+}
+#car-days-form .col-12.col-md-4{
+    margin-bottom: 15px;
+}
+
+@media (min-width:567px){
+    .box-por-dias-step1{
+        max-width: 100%;
+        margin-left: 0;
+        padding: 20px 30px 25px;
+    }
+    #car-days-form .col-12.col-md-4{
+        margin-bottom: 10px;
+    }
+}
+.btn-top-modificado{
+    margin-top: 35px;
+}
+.single-seguros-por-dias .accordion-item, .single-seguros-por-dias .accordion-button{
+    background: white !important;
+}
+.img-bloque-dias img{
+    max-width: 65%;
+}
+@media (min-width: 576px) {
+    .img-bloque-dias img{
+        max-width: 95%;
+        padding: 0 1.5rem;
+    }
+}
+#car-days-form .select2-container--default.select2-container--disabled .select2-selection--single{
+    background-color: transparent !important ;
+}
+.col-12 .form-check .form-switch label span:has-text("€") {
+    display: none;
+}
+button#submit-form {
+    width: 100%;
+}
+.list-pordias a span:hover {
+    color: var(--color-e) !important;
+    transition: all 0.4s;
+}
+@media (max-width: 767px) {
+    #title-seguro-present {
+        padding: 30px 30px 40px !important;
+    }
+    .wp-block-image img {
+        margin: -50px 0 0;
+        max-width: 250px;
+    }
+    h2.h3.text-primary {
+        font-size: 15px;
+        font-weight: normal;
+        color: var(--color-a) !important;
+        margin: 10px 0;
+        line-height: 1.5;
+    }
+    div#iframe-por-dias img{
+        display: none;
+    }
+    div#iframe-por-dias{
+        height: 30px;
+    }
+}
+#testimonios {
+    background: var(--color-d);
+    height: 300px;
+    margin-bottom: 185px;
+}
+@media (min-width: 992px) {
+    #testimonios {
+        height: 290px;
+        margin-bottom: 175px;
+    }
+}
