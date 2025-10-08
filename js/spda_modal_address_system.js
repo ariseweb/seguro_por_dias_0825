@@ -37,7 +37,7 @@
      */
     function showAddressModal() {
         Swal.fire({
-            title: '<img src="/img/seguro-dias.svg">Ingresa tu dirección',
+            title: '<img src="/img/South Diration.svg">Ingresa tu dirección',
             html: `
                 <div class="address-modal-content">
                     <div class="mb-3">

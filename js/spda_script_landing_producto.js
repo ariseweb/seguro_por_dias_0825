@@ -1,119 +1,3 @@
-// Función para validar edad mínima de 21 años en la fecha de nacimiento
-function validateMinimumAge(inputId, minimumAge = 21) {
-    const $input = $('#' + inputId);
-    const dateValue = $input.val();
-    
-    // Verificar que la fecha esté completa
-    if (dateValue.length !== 10) {
-        return false;
-    }
-    
-    // Parsear la fecha (formato dd/mm/aaaa)
-    const parts = dateValue.split('/');
-    const day = parseInt(parts[0]);
-    const month = parseInt(parts[1]) - 1; // Los meses en JS van de 0-11
-    const year = parseInt(parts[2]);
-    
-    // Crear objeto fecha
-    const birthDate = new Date(year, month, day);
-    const today = new Date();
-    
-    // Calcular edad
-    let age = today.getFullYear() - birthDate.getFullYear();
-    const monthDiff = today.getMonth() - birthDate.getMonth();
-    const dayDiff = today.getDate() - birthDate.getDate();
-    
-    // Ajustar edad si aún no ha cumplido años este año
-    if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
-        age--;
-    }
-    
-    // Validar edad mínima
-    if (age < minimumAge) {
-        showAgeError($input, minimumAge);
-        return false;
-    } else {
-        removeAgeError($input);
-        return true;
-    }
-}
-
-// Mostrar error de edad
-function showAgeError($input, minimumAge) {
-    const inputId = $input.attr('id');
-    const errorId = inputId + '-error';
-    
-    // Añadir clase error al input
-    $input.addClass('error');
-    $input.attr('aria-invalid', 'true');
-    
-    // Remover error anterior si existe
-    $('#' + errorId).remove();
-    
-    // Crear label de error
-    const $errorLabel = $('<label>', {
-        id: errorId,
-        class: 'error',
-        for: inputId,
-        text: 'Debes tener al menos ' + minimumAge + ' años'
-    });
-    
-    // Insertar después del input
-    $input.after($errorLabel);
-}
-
-// Remover error de edad
-function removeAgeError($input) {
-    const inputId = $input.attr('id');
-    const errorId = inputId + '-error';
-    
-    // Remover clase error del input
-    $input.removeClass('error');
-    $input.removeAttr('aria-invalid');
-    
-    // Remover label de error
-    $('#' + errorId).remove();
-}
-
-// Inicializar validación cuando el DOM esté listo
-$(document).ready(function() {
-    // Validar cuando el usuario termine de escribir (blur)
-    $('#fecha_nacimiento_conductor').on('blur', function() {
-        const $input = $(this);
-        const dateValue = $input.val();
-        
-        // Solo validar si la fecha está completa
-        if (dateValue.length === 10) {
-            validateMinimumAge('fecha_nacimiento_conductor', 21);
-        }
-    });
-    
-    // También validar cuando se complete la fecha (input)
-    $('#fecha_nacimiento_conductor').on('input', function() {
-        const $input = $(this);
-        const dateValue = $input.val();
-        
-        // Solo validar si la fecha está completa
-        if (dateValue.length === 10) {
-            validateMinimumAge('fecha_nacimiento_conductor', 21);
-        }
-    });
-    
-    // Validar antes de enviar el formulario
-    $('form').on('submit', function(e) {
-        const isValid = validateMinimumAge('fecha_nacimiento_conductor', 21);
-        
-        if (!isValid) {
-            e.preventDefault();
-            // Hacer scroll al campo con error
-            $('html, body').animate({
-                scrollTop: $('#fecha_nacimiento_conductor').offset().top - 100
-            }, 500);
-            return false;
-        }
-    });
-});
-
 function obtenerCatalogoCategoriasEscala(){
     return new Promise((resolve, reject) => {
         //Obtengo datos del form
@@ -279,10 +163,6 @@ jQuery(document).ready(async function($) {
     sessionStorage.removeItem('fechaNacimiento');
     sessionStorage.removeItem('escala');
 
-
-    
-
-
     // Inicializar jQuery Validate para el formulario
     $("#car-days-form").validate({
         rules: {
@@ -339,6 +219,9 @@ jQuery(document).ready(async function($) {
             var escala = $('#select-escala').val();
             var slug = window.location.pathname;
 
+            // Convertir formato de dd/mm/aaaa a dd-mm-aaaa
+            fechaNacimiento = fechaNacimiento.replace(/\//g, '-');
+
             sessionStorage.setItem('marca', marca);
             sessionStorage.setItem('modelo', modelo);
             sessionStorage.setItem('cp', cp);
@@ -383,5 +266,39 @@ jQuery(document).ready(async function($) {
      if ($('body').hasClass('is-embarcacion')) {
         iFrameResize({ log: true }, '#formulario')
     }
+
+
+
+    // Validar edad mínima de la fecha de naciiento
+    $('#fecha_nacimiento_conductor').on('blur input', function() {
+        const $input = $(this);
+        const fecha = $input.val();
+        
+        // Solo validar si la fecha está completa
+        if (fecha.length !== 10) return;
+        
+        // Parsear fecha (dd/mm/aaaa)
+        const partes = fecha.split('/');
+        const dia = parseInt(partes[0]);
+        const mes = parseInt(partes[1]) - 1; // Meses en JS: 0-11
+        const año = parseInt(partes[2]);
+        
+        // Calcular fecha de nacimiento y fecha límite (21 años atrás)
+        const fechaNacimiento = new Date(año, mes, dia);
+        const hoy = new Date();
+        const fecha21AñosAtras = new Date(hoy.getFullYear() - 21, hoy.getMonth(), hoy.getDate());
+        
+        // Validar si tiene menos de 21 años
+        if (fechaNacimiento > fecha21AñosAtras) {
+            // Mostrar error
+            $input.addClass('error').attr('aria-invalid', 'true');
+            $('#fecha_nacimiento_conductor-error').remove(); // Remover error anterior
+            $input.after('<label id="fecha_nacimiento_conductor-error" class="error" for="fecha_nacimiento_conductor">Debes tener al menos 21 años</label>');
+        } else {
+            // Quitar error
+            $input.removeClass('error').removeAttr('aria-invalid');
+            $('#fecha_nacimiento_conductor-error').remove();
+        }
+    });
 
 });
