@@ -426,7 +426,7 @@ function SPDA_api_plugin_enqueue_scripts(){
       // Google Places API (Autocomplete de direcciones) - Mantenemos para futuro uso
       wp_enqueue_script(
          'google-places',
-         'https://maps.googleapis.com/maps/api/js?key=AIzaSyDIZpTzMDNb7votsJP4NiwAEvEUJKZm-ew&libraries=places&callback=initAutocomplete',
+         '',
          array( 'jquery' ), 
          null,
          true
