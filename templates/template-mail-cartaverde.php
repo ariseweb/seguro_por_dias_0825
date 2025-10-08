@@ -1,0 +1,74 @@
+<?php 
+echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style type="text/css" emogrify="no">
+        /* Estilos generales para compatibilidad en diferentes dispositivos y clientes de correo */
+        body { margin: 0; padding: 0; width: 100%; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+        table, td { border-collapse: collapse; }
+        img { outline: none; text-decoration: none; -ms-interpolation-mode: bicubic; }
+        a { color: #644bf1; text-decoration: underline; }
+        .nl2go-default-textstyle { color: #004481; font-family: Space Grotesk, Arial; font-size: 16px; line-height: 1.5; }
+    </style>
+    <title>Seguro contratado con carta verde </title>
+</head>
+<body style="background-color: #ffffff; color: #004481;">
+
+    <table width="100%" bgcolor="#ffffff" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+            <td>
+                <table width="600" align="center" cellpadding="0" cellspacing="0" border="0" style="width: 600px; margin: 0 auto;">
+                    <!-- Logo -->
+                    <tr>
+                        <td align="center" style="padding: 20px 0;">
+                            <img src="'.SPDA_LOGO_TOP_EMPRESA.'" width="160" alt="Logo" style="display: block;">
+                        </td>
+                    </tr>
+                    <!-- Título -->
+                    <tr>
+                        <td align="center" style="padding: 15px 0;">
+                            <h1 style="color: #004481; font-family: Arial, Helvetica, sans-serif; font-size: 28px; line-height: 1.2;">Solicitud carta verde</h1>
+                        </td>
+                    </tr>
+                    <!-- Mensaje -->
+                    <tr>
+                        <td style="padding: 0 20px;">
+                            <p style="color: #333333; font-family: Space Grotesk, Arial; font-size: 16px;">Te escribo desde Tresmares Correduría de Seguros, colaborador vuestro.</p>
+                            <p style="color: #333333; font-family: Space Grotesk, Arial; font-size: 16px;">El asegurado que te indico a continuación nos solicita la emisión de Certificado Internacional de Seguro.</p>
+                            <p style="color: #333333; font-family: Space Grotesk, Arial; font-size: 16px;">¿Lo podrías generar y enviárselo directamente al asegurado? Si no fuera posible me dices.</p>
+                            <p style="color: #333333; font-family: Space Grotesk, Arial; font-size: 16px;">Los datos de la contratación son:</p>
+                            <ul style="color: #333333; font-family: Space Grotesk, Arial; font-size: 16px; margin-top: 30px; list-style-type: none; padding: 0;">
+                                <li><strong>Nombre:</strong>'.$nombre_tomador.' '.$primer_apellido_tomador.' '.$segundo_apellido_tomador.'</li>
+                                <li><strong>Email asegurado:</strong> '.$email_tomador.'</li>
+                                <li><strong>NIF/NIE/CIF:</strong> '.$identificador_tomador.'</li>
+                                <li><strong>ID de venta:</strong> '.$idVenta.'</li>
+                                <li><strong>Marca del vehículo:</strong> '.$marca_vehiculo.'</li>
+                                <li><strong>Modelo del vehículo:</strong> '.$modelo_vehiculo.'</li>
+                                <li><strong>Matrícula del vehículo:</strong> '.$matricula_vehiculo.'</li>
+                            </ul>
+                        </td>
+                    </tr>
+                   
+                    <!-- Pie de página -->
+                    <tr>
+                        <td align="center" style="padding: 20px 15px; background-color: #eafcfd; color: #3b3f44;">
+                            <p style="font-size: 18px; font-family: Space Grotesk, Arial; font-weight: bold;">'.SPDA_NAME_EMPRESA.'</p>
+                            <p style="color: #333; font-size: 15px;">'.SPDA_DIRECCION_EMPRESA.'</p>
+                            <p><a href="mailto:info@tresmares.com" style="color: #644bf1; text-decoration: underline;">info@tresmares.com</a></p>
+                            <p style="color: #333; font-size: 15px;">'.SPDA_TELEFONO_EMPRESA.'</p>
+                        </td>
+                    </tr>
+                </table>
+                <!-- Texto Legal -->
+                <div align="center" style="color: #727272; font-size: 10px; margin-top: 20px;">
+                    Concertado seguro de Responsabilidad Civil según art. 27 Ley 26/2006 del 17 de Julio.
+                </div>
+            </td>
+        </tr>
+    </table>
+
+</body>
+</html>';

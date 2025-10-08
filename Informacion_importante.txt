@@ -1,0 +1,31 @@
+Descripción
+
+Este plugin permite tarificar y contratar un seguro por días a través de la api de seguropordias.com:
+
+- El usuario elige la cobertura que desea
+- Ingresa toda su información personal, del tomador y bancaria.
+- Se confirma la contratación mediante la api de telefónica
+- Se envía por correo a la correduría y de agradecimiento al usuario..
+
+## 2. Requerimientos iniciales
+
+Asegurarse que en la configuración del servidor se han eliminado de de *disable functions*:
+
+- proc_open
+- proc_close
+
+## 3. Instalación y configuración
+
+Subir el plugin a través de FTP o directamente en Wordpress.
+
+**Importante:** Antes de activar:
+
+1. Definir en el archivo principal del plugin las constantes entre el comentario  /***VARIABLES A REVISAR ANTES DE ACTIVAR EL PLUGIN****/   que sean necesarias.
+2. Activar el  plugin.
+
+<aside>
+🚨
+
+Es aconsejable tras la activación el plugin reescribir enlaces permanentes y borrar cache
+
+</aside>
