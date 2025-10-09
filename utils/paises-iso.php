@@ -1,17 +1,14 @@
 <?php
 
 /**
- * Códigos de países ISO 3166-1 alpha-2
- * Para el selector de país de expedición de matrícula
+ * Devuelve una lista de países con su nombre y la URL de su bandera.
+ * Utiliza los códigos de país ISO 3166-1 alpha-2.
+ * Las imágenes de las banderas son de flagcdn.com (20px de ancho).
+ *
+ * @return array Array asociativo con código ISO => [nombre => 'NombrePaís', bandera_url => 'URL_Bandera']
  */
-
-/**
- * Lista de países permitidos específicos para el seguro por días
- * 
- * @return array Array asociativo con código ISO => nombre del país
- */
-function SPDA_obtener_paises_principales() {
-    return array(
+function SPDA_obtener_paises_con_banderas() {
+    $paises = array(
         'AL' => 'Albania',
         'DE' => 'Alemania',
         'AD' => 'Andorra',
@@ -53,4 +50,19 @@ function SPDA_obtener_paises_principales() {
         'TR' => 'Turkey',
         'UA' => 'Ukraine'
     );
+
+    $resultado = [];
+    foreach ($paises as $codigo => $nombre) {
+        // Se construye la URL usando el código de país en minúsculas.
+        $url_bandera = 'https://flagcdn.com/w20/' . strtolower($codigo) . '.png';
+        
+        $resultado[$codigo] = [
+            'nombre' => $nombre,
+            'bandera_url' => $url_bandera
+        ];
+    }
+    
+    return $resultado;
 }
+
+?>
