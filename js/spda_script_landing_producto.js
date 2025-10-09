@@ -293,7 +293,7 @@ jQuery(document).ready(async function($) {
             // Mostrar error
             $input.addClass('error').attr('aria-invalid', 'true');
             $('#fecha_nacimiento_conductor-error').remove(); // Remover error anterior
-            $input.after('<label id="fecha_nacimiento_conductor-error" class="error" for="fecha_nacimiento_conductor">Debes tener al menos 21 años</label>');
+            $input.after('<label id="fecha_nacimiento_conductor-error" class="error" for="fecha_nacimiento_conductor">Debe tener al menos 21 años</label>');
         } else {
             // Quitar error
             $input.removeClass('error').removeAttr('aria-invalid');

@@ -37,27 +37,22 @@
      */
     function showAddressModal() {
         Swal.fire({
-            title: '<img src="/img/South Diration.svg">Ingresa tu dirección',
+            title: 'Ingresa tu dirección',
             html: `
                 <div class="address-modal-content">
-                    <div class="mb-3">
+                    <div class="mb-2">
                         <label class="form-label text-start d-block">Buscar dirección</label>
-                        <input type="text" id="modal_address_search" class="form-control" placeholder="Empieza a escribir tu dirección...">
-                        <div class="form-text text-start">El autocompletado se activará al escribir, por favor incluye tu número de calle</div>
+                        <input type="text" id="modal_address_search" class="form-control" placeholder="Escribe tu dirección incluyendo el número de la calle">
                     </div>
                     
-                    <div class="row g-3 mt-2">
-                        <div class="col-6">
-                            <label class="form-label text-start d-block">Número</label>
-                            <input type="text" id="modal_street_number" class="form-control" placeholder="Ej: 123">
-                        </div>
-                        <div class="col-6">
+                    <div class="row g-3 mt-3">
+                        <div class="col-12 mt-0">
                             <label class="form-label text-start d-block">Piso/Puerta</label>
                             <input type="text" id="modal_floor_door" class="form-control" placeholder="Ej: 3º A">
                         </div>
                     </div>
                     
-                    <div class="mt-3 text-center">
+                    <div class="mt-4 text-center">
                         <a href="#" id="no_encuentro_direccion" class="text-decoration-none">
                             <i class="fas fa-question-circle me-1"></i>
                             No encuentro la dirección
@@ -66,6 +61,9 @@
                 </div>
             `,
             width: 500,
+            imageUrl: '/wp-content/plugins/seguro-por-dias-api/img/South Diration.svg',
+            imageWidth: 80,
+            imageAlt: 'Ilustración de dirección',
             showCancelButton: true,
             confirmButtonText: 'Continuar',
             cancelButtonText: 'Cancelar',
@@ -84,7 +82,6 @@
             },
             preConfirm: () => {
                 const addressSearch = document.getElementById('modal_address_search').value;
-                const streetNumber = document.getElementById('modal_street_number').value;
                 const floorDoor = document.getElementById('modal_floor_door').value;
                 
                 if (!addressSearch.trim()) {
@@ -96,10 +93,15 @@
                     Swal.showValidationMessage('Por favor, selecciona una dirección válida de la lista');
                     return false;
                 }
-                
+
+                //si el addressSearch no contiene un número de casa, mostrar mensaje de error obligando al usuario a ingresarlo
+                if (!/\d+/.test(mapboxSearchInstance.value)) {
+                    Swal.showValidationMessage('Por favor, ingresa un número de casa en la dirección');
+                    return false;
+                }
+
                 return {
                     addressData: selectedAddressData,
-                    streetNumber: streetNumber,
                     floorDoor: floorDoor
                 };
             }
@@ -123,6 +125,20 @@
         }
 
         try {
+            // Limpiar instancia anterior si existe
+            if (mapboxSearchInstance) {
+                try {
+                    mapboxSearchInstance.remove();
+                } catch (e) {
+                    console.log('Error al limpiar instancia anterior:', e);
+                }
+                mapboxSearchInstance = null;
+            }
+
+            // Limpiar cualquier elemento de Mapbox anterior que pueda existir
+            const existingMapboxElements = searchInput.parentNode.querySelectorAll('mapbox-search-box');
+            existingMapboxElements.forEach(el => el.remove());
+
             // Crear instancia de Mapbox Search
             const search = new MapboxSearchBox();
             search.accessToken = 'pk.eyJ1IjoiYXJpc2V3ZWIiLCJhIjoiY21nOXFnamEwMGw3ZTJrcXdpaDk3c28xayJ9.m3hzygl6Wob34BLyr5awiQ';
@@ -150,86 +166,79 @@
                     colorBackgroundHover: '#f8f9fa',
                     colorBorder: '#ced4da',
                     colorBorderHover: '#0d6efd',
-                    boxShadow: '0 0 0 0.2rem rgba(13, 110, 253, 0.25)',
+                    boxShadow: 'none',
                     spacing: '0.5rem 0.75rem'
                 },
+                icons: {
+                    search: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+                            <svg viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
+                              <rect width="18" height="18" fill="transparent" opacity="0"/>
+                            </svg>`,
+                },
                 cssText: `
-                    .mapboxgl-ctrl-geocoder {
-                        width: 100% !important;
-                        max-width: none !important;
+                    /* Eliminar box-shadow del contenedor principal */
+                    mapbox-search-box {
                         box-shadow: none !important;
-                        border: 1px solid #ced4da !important;
-                        border-radius: 0.375rem !important;
-                        font-family: inherit !important;
                     }
-                    .mapboxgl-ctrl-geocoder--input {
-                        padding: 0.5rem 0.75rem !important;
-                        font-size: 1rem !important;
-                        line-height: 1.5 !important;
-                        color: #212529 !important;
-                        background-color: #ffffff !important;
-                        border: none !important;
-                        border-radius: 0.375rem !important;
-                        width: 100% !important;
-                        font-family: inherit !important;
+                    
+                    /* Estilos del input */
+                    .Input {
+                        padding: 12px 17px 8px !important;
+                        border-radius: 13px !important;
+                        height: auto !important;
+                        color: var(--color-b) !important;
+                        position: relative;
+                        font-size: 1rem;
+                        font-weight: 400;
+                        line-height: 1.5;
+                        border: 1px solid #ced4da;
+                        box-shadow: none !important;
                     }
-                    .mapboxgl-ctrl-geocoder--input:focus {
-                        border-color: #0d6efd !important;
-                        box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25) !important;
-                        outline: 0 !important;
+                    
+                    .Input:focus,
+                    .Input:active {
+                        background-color: #fff;
+                        border: 1px solid var(--color-c) !important;
+                        outline: 0;
+                        box-shadow: 0 0 0 0.25rem rgb(49 203 168 / 20%) !important;
                     }
-                    .mapboxgl-ctrl-geocoder--input::placeholder {
-                        color: #6c757d !important;
-                        opacity: 1 !important;
+                    
+                    /* Estilos del dropdown de resultados */
+                    .Results {
+                        z-index: 99999 !important;
+                        position: absolute !important;
+                        text-align: left !important;
+                        margin-top: 4px !important;
                     }
-                    .mapboxgl-ctrl-geocoder--icon {
-                        display: none !important;
-                    }
-                    .mapboxgl-ctrl-geocoder--button {
-                        display: none !important;
-                    }
-                    .mapboxgl-ctrl-geocoder--icon-search {
-                        display: none !important;
-                    }
-                    .mapboxgl-ctrl-geocoder--icon-close {
-                        display: none !important;
-                    }
-                    .mapboxgl-ctrl-geocoder--suggestions {
-                        border: 1px solid #ced4da !important;
-                        border-top: none !important;
-                        border-radius: 0 0 0.375rem 0.375rem !important;
-                        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
-                        max-height: 200px !important;
-                        overflow-y: auto !important;
-                        background-color: #ffffff !important;
-                    }
-                    .mapboxgl-ctrl-geocoder--suggestion {
-                        padding: 0.5rem 0.75rem !important;
-                        font-size: 0.9rem !important;
-                        color: #212529 !important;
-                        border-bottom: 1px solid #f8f9fa !important;
+                    
+                    /* Estilos de los items del dropdown */
+                    .Result {
+                        text-align: left !important;
+                        padding: 12px 16px !important;
                         cursor: pointer !important;
-                        transition: background-color 0.2s ease !important;
                     }
-                    .mapboxgl-ctrl-geocoder--suggestion:hover,
-                    .mapboxgl-ctrl-geocoder--suggestion.mapboxgl-ctrl-geocoder--suggestion-selected {
+                    
+                    .Result:hover {
                         background-color: #f8f9fa !important;
-                        color: #0d6efd !important;
                     }
-                    .mapboxgl-ctrl-geocoder--suggestion:last-child {
-                        border-bottom: none !important;
-                    }
-                    .mapboxgl-ctrl-geocoder--suggestion-title {
+                    
+                    /* Título de cada dirección */
+                    .Result-title {
+                        text-align: left !important;
                         font-weight: 500 !important;
-                        color: inherit !important;
+                        color: #212529 !important;
                     }
-                    .mapboxgl-ctrl-geocoder--suggestion-address {
-                        font-size: 0.8rem !important;
+                    
+                    /* Descripción/dirección completa */
+                    .Result-description {
+                        text-align: left !important;
+                        font-size: 0.875rem !important;
                         color: #6c757d !important;
-                        margin-top: 0.125rem !important;
+                        margin-top: 4px !important;
                     }
                 `
             };
+            
             // Insertar el componente de búsqueda
             searchInput.parentNode.insertBefore(search, searchInput.nextSibling);
             searchInput.style.display = 'none';
@@ -274,13 +283,17 @@
         // Extraer el nombre de la calle desde el contexto o parsearlo
         const streetName = context.address?.street_name || context.street?.name || addressParts.streetName || properties.name || '';
         
+        //Eliminamos la palabra provincia de del state si es que existe
+        let stateName = context.region?.name || '';
+        stateName = stateName.replace(/\bprovincia de \b/i, '').trim();
+
         return {
             fullAddress: fullAddress,
             streetName: streetName,
             streetType: addressParts.streetType || '',
             addressNumber: addressNumber,
             city: context.place?.name || '',
-            state: context.region?.name || '',
+            state: stateName,
             postalCode: context.postcode?.name || '',
             coordinates: feature.geometry.coordinates
         };
@@ -291,8 +304,14 @@
      */
     function parseSpanishAddress(address) {
         const streetTypes = [
-            'Calle', 'Avenida', 'Plaza', 'Paseo', 'Carretera', 'Travesía', 'Ronda',
-            'C/', 'Av.', 'Pl.', 'P.', 'Ctra.', 'Trav.', 'Rda.'
+            'Alameda', 'Apartamento', 'Avenida', 'Bajada', 'Bloque', 'Barrio', 'Barranco',
+            'Chalet', 'Callejón', 'Calle', 'Camino', 'Colonia', 'Carretera', 'Casas',
+            'Cuesta', 'Diseminado', 'Edificio', 'Glorieta', 'Grupo', 'Lugar', 'Mercado',
+            'Poblado', 'Partida', 'Polígono', 'Poligono', 'Pasaje', 'Prolongación', 
+            'Prolongacion', 'Paseo', 'Plaza', 'Rambla', 'Ronda', 'Subida', 'Senda',
+            'Torrente', 'Travesía', 'Travesia', 'Urbanización', 'Urbanizacion',
+            // Abreviaturas comunes
+            'C/', 'Av.', 'Avda.', 'Pl.', 'P.', 'Ctra.', 'Trav.', 'Rda.', 'Urb.', 'Prol.'
         ];
         
         let streetType = '';
@@ -300,10 +319,17 @@
         
         for (const type of streetTypes) {
             const regex = new RegExp(`^${type}\\s+`, 'i');
+
+
             if (regex.test(address)) {
                 streetType = type;
                 streetName = address.replace(regex, '').trim();
                 break;
+            }
+
+             //Si no coincide con un street name colocamos Calle por defecto
+            if (streetType === '' ) {
+                streetType = 'Calle';
             }
         }
         
@@ -322,34 +348,17 @@
     function showPrefilledAddressForm(data) {
         const { addressData, streetNumber, floorDoor } = data;
         
-        // Parsear el tipo de vía del streetName
-        const streetTypeParsed = parseStreetTypeFromName(addressData.streetName);
-        
         Swal.fire({
             title: 'Confirmar y editar dirección',
             html: `
                 <div class="manual-address-form">
-                    <div class="alert alert-info text-start mb-3">
-                        <i class="fas fa-info-circle me-2"></i>
-                        Puedes editar cualquier campo si es necesario
-                    </div>
-                    <div class="row g-3">
+                    <div class="row g-3 mb-4">
                         <div class="col-12">
-                            <label class="form-label text-start d-block">Tipo de vía <span class="text-danger">*</span></label>
-                            <select id="prefilled_street_type" class="form-select select2-tipo-via" required>
-                                <option value="">Seleccionar tipo de vía...</option>
-                                <option value="Calle" ${streetTypeParsed.type === 'Calle' ? 'selected' : ''}>Calle</option>
-                                <option value="Avenida" ${streetTypeParsed.type === 'Avenida' ? 'selected' : ''}>Avenida</option>
-                                <option value="Plaza" ${streetTypeParsed.type === 'Plaza' ? 'selected' : ''}>Plaza</option>
-                                <option value="Paseo" ${streetTypeParsed.type === 'Paseo' ? 'selected' : ''}>Paseo</option>
-                                <option value="Carretera" ${streetTypeParsed.type === 'Carretera' ? 'selected' : ''}>Carretera</option>
-                                <option value="Travesía" ${streetTypeParsed.type === 'Travesía' ? 'selected' : ''}>Travesía</option>
-                                <option value="Ronda" ${streetTypeParsed.type === 'Ronda' ? 'selected' : ''}>Ronda</option>
-                            </select>
+                            <input type="hidden" id="prefilled_street_type" class="form-control" value="${addressData.streetType || ''}" readonly>
                         </div>
                         <div class="col-12">
                             <label class="form-label text-start d-block">Nombre de la vía</label>
-                            <input type="text" id="prefilled_street_name" class="form-control" placeholder="Ej: Gran Vía" value="${streetTypeParsed.name}">
+                            <input type="text" id="prefilled_street_name" class="form-control" placeholder="Ej: Gran Vía" value="${addressData.streetName || ''}">
                         </div>
                         <div class="col-6">
                             <label class="form-label text-start d-block">Número</label>
@@ -438,38 +447,7 @@
         });
     }
 
-    /**
-     * Parsear tipo de vía del nombre completo
-     */
-    function parseStreetTypeFromName(fullName) {
-        const streetTypes = [
-            'Avenida', 'Calle', 'Plaza', 'Paseo', 'Carretera', 'Travesía', 'Ronda',
-            'Av.', 'C/', 'Pl.', 'P.', 'Ctra.', 'Trav.', 'Rda.'
-        ];
-        
-        for (const type of streetTypes) {
-            const regex = new RegExp(`^${type}\\s+`, 'i');
-            if (regex.test(fullName)) {
-                const cleanType = type === 'Av.' ? 'Avenida' : 
-                                 type === 'C/' ? 'Calle' :
-                                 type === 'Pl.' ? 'Plaza' :
-                                 type === 'P.' ? 'Paseo' :
-                                 type === 'Ctra.' ? 'Carretera' :
-                                 type === 'Trav.' ? 'Travesía' :
-                                 type === 'Rda.' ? 'Ronda' : type;
-                
-                return {
-                    type: cleanType,
-                    name: fullName.replace(regex, '').trim()
-                };
-            }
-        }
-        
-        return {
-            type: '',
-            name: fullName
-        };
-    }
+
 
     /**
      * Mostrar formulario manual de dirección
@@ -481,17 +459,7 @@
                 <div class="manual-address-form">
                     <div class="row g-3">
                         <div class="col-12">
-                            <label class="form-label text-start d-block">Tipo de vía <span class="text-danger">*</span></label>
-                            <select id="manual_street_type" class="form-select select2-tipo-via" required>
-                                <option value="">Seleccionar tipo de vía...</option>
-                                <option value="Calle">Calle</option>
-                                <option value="Avenida">Avenida</option>
-                                <option value="Plaza">Plaza</option>
-                                <option value="Paseo">Paseo</option>
-                                <option value="Carretera">Carretera</option>
-                                <option value="Travesía">Travesía</option>
-                                <option value="Ronda">Ronda</option>
-                            </select>
+                            <input type="hidden" id="manual_street_type" class="form-control" value="Calle" readonly>
                         </div>
                         <div class="col-12">
                             <label class="form-label text-start d-block">Nombre de la vía</label>
@@ -637,6 +605,9 @@
         // Buscar el contenedor de la dirección y añadir campos individuales
         const addressContainer = $('#direccion_completa_display').closest('.col-12');
         
+        //Buscar contenedor del boton btn_anadir_direccion
+        const addButtonContainer = $('#btn_anadir_direccion').parent();
+
         // Remover campos anteriores si existen
         addressContainer.find('.card').remove();
         
@@ -688,7 +659,13 @@
         
         // Añadir los campos al contenedor
         addressContainer.append(fieldsHtml);
-        
+
+        //Quitamos clase d-none a container para que se vea
+        addressContainer.removeClass('d-none');
+
+        //Ocultar el botón de añadir dirección
+        addButtonContainer.addClass('d-none');
+
         // Configurar botón de editar
         $(document).on('click', '#btn_editar_direccion', function(e) {
             e.preventDefault();

@@ -1124,9 +1124,6 @@ span.mini-moneda {
     font-weight: bold;
     color: var(--color-b);
 }
-#fecha_carnet_conductor,#fecha_inicio_cobertura{
-    cursor: pointer;
-}
 button.swal2-cancel.btn-swal-cancel.swal2-styled {
     border-radius: 13px;
     margin-top: 0;
@@ -1165,4 +1162,39 @@ img.top-bar-logo-multistp {
 }
 .border-rounded-13px {
     border-radius: 13px !important;
+}
+.img-flag {
+    width: 20px;
+    height: auto;
+    margin-right: 8px;
+    vertical-align: middle;
+}
+/*
+ * Oculta el pseudo-elemento ::before (el punto) únicamente para el
+ * desplegable de países al que le hemos añadido la clase personalizada.
+ */
+.select2-dropdown.pais-select-sin-punto .select2-results__option::before {
+    display: none;
+}
+.select2-results {
+    background: #fafbfc !important;
+}
+.two-points-multsp {
+    max-width: 400px;
+}
+img.swal2-image{
+    width: 70px;
+    margin-bottom: -10px;
+}
+.swal2-html-container{
+    padding: 0 2rem 0.5rem !important;
+}
+.swal2-actions {
+    z-index: 1 !important;
+    position: relative !important;
+}
+
+.swal2-confirm,
+.swal2-cancel {
+    z-index: 1 !important;
 }

@@ -197,16 +197,19 @@
 
 									<!-- País de expedición de la matrícula -->
 									<div class="col-12 col-md-6">
-										<label for="pais_expedicion_matricula" class="form-label">País de expedición matrícula</label>
-										<select name="pais_expedicion_matricula" id="pais_expedicion_matricula" class="select2 j2 form-control" required>
-											<?php 
-											$paises = SPDA_obtener_paises_principales();
-											foreach ($paises as $codigo => $nombre) {
-												$selected = ($codigo === 'ES') ? 'selected' : '';
-												echo "<option value=\"{$codigo}\" {$selected}>{$nombre}</option>";
-											}
-											?>
-										</select>
+									    <label for="pais_expedicion_matricula" class="form-label">País de expedición matrícula</label>
+									    <select name="pais_expedicion_matricula" id="pais_expedicion_matricula" class="select2 j2 form-control" required>
+									        <?php
+									        // 1. Usamos la nueva función que devuelve la URL de la bandera
+									        $paises = SPDA_obtener_paises_con_banderas();
+									        
+									        foreach ($paises as $codigo => $datos) {
+									            $selected = ($codigo === 'ES') ? 'selected' : '';
+									            // 2. Añadimos el atributo data-bandera-url con la URL de la imagen
+									            echo "<option value=\"{$codigo}\" data-bandera-url=\"{$datos['bandera_url']}\" {$selected}>{$datos['nombre']}</option>";
+									        }
+									        ?>
+									    </select>
 									</div>
 
 									<!-- Matrícula del vehículo -->
@@ -218,7 +221,7 @@
 									<!--Fecha expedicion carnet-->
 								    <div class="col-12 col-md-6">
 										<label for="fecha_carnet_conductor" class="form-label">Fecha expedición carnet</label>
-										<input type="text" class="form-control" placeholder="Selecciona una fecha" id="fecha_carnet_conductor" name="fecha_carnet_conductor" required>
+										<input type="text" class="form-control input_slash_date" placeholder="dd/mm/aaaa" id="fecha_carnet_conductor" name="fecha_carnet_conductor" required>
 									</div>
 
 									<!-- Documento conductor-->

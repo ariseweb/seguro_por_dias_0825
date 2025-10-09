@@ -743,6 +743,12 @@ function validateDateTime() {
 function reglasCustomValidation($) {
        // Añadir método de validación personalizada para la matrícula según id_cat_selected
     $.validator.addMethod("validMatricula", function(value, element) {
+
+        //No se válida si el país de expedición no es España
+        let pais_expedicion = $('#pais_expedicion_matricula').val();
+        if (pais_expedicion !== 'ES') {
+            return true; // No validar si no es España            
+        }
         let id_cat_selected = $('#id_cat_veh').val();
 
         if (id_cat_selected === '5') {
@@ -1062,80 +1068,84 @@ jQuery(document).ready(async function ($) {
     });
 
 
+    /****
+     * VALIDAMOS LA FECHA DEL CARNET DE CONDUCIR SEA VÁLIDA, ES DECIR HAN PASADO AL MENOS 21 AÑOS DESDE LA FECHA DE NACIMIENTO
+     ****/
+    $('#fecha_carnet_conductor').on('blur input', function() {
+        const $input = $(this);
+        const fechaCarnetStr = $input.val();
 
+        if (fechaCarnetStr.length !== 10) return;
 
-
-    //Fecha expedición carnet
-    new AirDatepicker('#fecha_carnet_conductor', {
-        dateFormat: 'dd-MM-yyyy',
-        isMobile: true,
-        autoClose: true,
-        locale: localeEs,
-        startDate: new Date(2001, 1, 1),
-        view: 'years',
-        minView: 'days',
-        onChangeView(view) {
-            // Cambiar la vista al seleccionar años o meses
-            const instance = this; // 'this' se refiere a la instancia del datepicker
-            setTimeout(() => {
-                if (view === 'years' && instance.setView) {
-                    instance.setView('months');
-                } else if (view === 'months' && instance.setView) {
-                    instance.setView('days');
-                }
-            }, 0);
-        },
-        onSelect: function({formattedDate, date}) {
-            // Validar si han pasado al menos 21 años desde la fecha de nacimiento
-            validateAge(date); 
-        }
-    });
-
-
-    function validateAge(fechaCarnetConducir) {
-        // Obtener la fecha de nacimiento desde sessionStorage
-        const fechaNacimiento = sessionStorage.getItem('fechaNacimiento');
-        
-        if (!fechaNacimiento) {
-            // Mostrar alerta con SweetAlert2 si no hay fecha de nacimiento en sessionStorage
+        const fechaNacimientoStr = sessionStorage.getItem('fechaNacimiento');
+        if (!fechaNacimientoStr) {
             Swal.fire({
                 icon: 'error',
-                title: 'Error',
-                text: 'No se ha encontrado la fecha de nacimiento en el almacenamiento.',
+                title: 'Error de validación',
+                text: 'No se pudo recuperar la fecha de nacimiento para comparar.',
                 confirmButtonText: 'OK'
             });
             return;
         }
 
-        // Convertir la fecha de nacimiento de sessionStorage a un objeto Date
-        const [day, month, year] = fechaNacimiento.split('-'); // Formato dd-MM-yyyy
-        const fechaNac = new Date(year, month - 1, day); // Convertimos la fecha de nacimiento a Date
+        // 3. Parsear ambas fechas aceptando guiones (-) o barras (/)
+        // Usamos una expresión regular para hacer el split más flexible
+        const partesNacimiento = fechaNacimientoStr.split(/[-/]/); // <-- CAMBIO AQUÍ
+        const diaNac = parseInt(partesNacimiento[0]);
+        const mesNac = parseInt(partesNacimiento[1]) - 1;
+        const anioNac = parseInt(partesNacimiento[2]);
+        const fechaNacimientoObj = new Date(anioNac, mesNac, diaNac);
 
-        // Calcular la diferencia en años entre la fecha del carnet y la fecha de nacimiento
-        let edad = fechaCarnetConducir.getFullYear() - fechaNac.getFullYear();
-        const mes = fechaCarnetConducir.getMonth() - fechaNac.getMonth();
-        const dia = fechaCarnetConducir.getDate() - fechaNac.getDate();
+        const partesCarnet = fechaCarnetStr.split(/[-/]/); // <-- CAMBIO AQUÍ
+        const diaCarnet = parseInt(partesCarnet[0]);
+        const mesCarnet = parseInt(partesCarnet[1]) - 1;
+        const anioCarnet = parseInt(partesCarnet[2]);
+        const fechaCarnetObj = new Date(anioCarnet, mesCarnet, diaCarnet);
 
-        // Ajustar la edad si el mes o el día no han pasado en este año
-        if (mes < 0 || (mes === 0 && dia < 0)) {
-            edad--;
-        }
+        // 4. Calcular la fecha mínima en la que se pudo obtener el carnet
+        const fechaMinimaCarnet = new Date(fechaNacimientoObj);
+        fechaMinimaCarnet.setFullYear(fechaNacimientoObj.getFullYear() + 21);
 
-        // Validar si han pasado al menos 18 años
-        if (edad < 18) {
-            // Mostrar alerta de SweetAlert2 si no han pasado 18 años
+        // 5. Comparar si la fecha del carnet es anterior a la fecha mínima permitida
+        if (fechaCarnetObj < fechaMinimaCarnet) {
             Swal.fire({
                 icon: 'error',
-                title: 'Fecha inválida',
-                text: 'La fecha seleccionada debe ser al menos 18 años después de la fecha de nacimiento.',
-                confirmButtonText: 'Entendido'
+                title: 'Fecha incorrecta',
+                text: 'La fecha de obtención del carnet debe ser, como mínimo, 21 años posterior a tu fecha de nacimiento.',
+                confirmButtonText: 'OK'
             });
-            // Limpiar el campo si la validación falla
-            $('#fecha_carnet_conductor').val('');
         }
-    }
+    });
 
 
+    // Función para dar formato a las opciones con su bandera
+    function formatoConBandera (estado) {
+        // Si no hay estado (ej. en el placeholder), devuelve el texto
+        if (!estado.id) {
+            return estado.text;
+        }
+
+        // Obtiene la URL de la bandera del atributo data del <option>
+        var urlBandera = $(estado.element).data('bandera-url');
+        
+        // Si no hay URL, solo muestra el texto
+        if (!urlBandera) {
+            return estado.text;
+        }
+
+        // Crea el HTML con la imagen y el texto
+        var $estado = $(
+            '<span><img src="' + urlBandera + '" class="img-flag" /> ' + estado.text + '</span>'
+        );
+        return $estado;
+    };
+
+    // Inicializa Select2 en tu elemento
+    $('#pais_expedicion_matricula').select2({
+        templateSelection: formatoConBandera, // Formato para el elemento seleccionado
+        templateResult: formatoConBandera,     // Formato para los elementos en la lista
+        dropdownCssClass: 'pais-select-sin-punto' 
+    });
 
     // Setear el valor del input a la fecha de mañana
     $('#fecha_inicio_cobertura').val(todayFormatted);
@@ -2425,7 +2435,7 @@ function crearFormularioDinamico(tipoFormulario, datosPersona = {}) {
                                        class="form-check-input pregunta-trigger" 
                                        id="tomador-juridica-si-${formularioDinamicoCount}" 
                                        value="si" data-pregunta="tomador-juridica" required>
-                                <label for="tomador-juridica-si-${formularioDinamicoCount}">P. Jurídica</label>
+                                <label for="tomador-juridica-si-${formularioDinamicoCount}">Persona Jurídica</label>
                             </div>
 
                         </div>
